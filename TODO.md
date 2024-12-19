@@ -2,16 +2,16 @@ TODO:
 
 Associationsdiagram
 
-[x] Skapa och utveckla ett associationsdiagram
-[x] Säkerställ att databasen innehåller minst sex stycken tabeller
+- [x] Skapa och utveckla ett associationsdiagram
+- [x] Säkerställ att databasen innehåller minst sex stycken tabeller
 
 ---
 
 SQL-implementation
 
-[] Skapa den normaliserade relationsdatabasen i SQL
-[] Lägg till exempeldata i varje tabell
-[] Skriv och testa minst tio meningsfulla SQL-koder:
+- [] Skapa den normaliserade relationsdatabasen i SQL
+- [] Lägg till exempeldata i varje tabell
+- [] Skriv och testa minst tio meningsfulla SQL-koder:
   - Minst 3 JOINs
   - Minst 1 SQL-funktion
 
@@ -19,8 +19,8 @@ SQL-implementation
 
 C#-implementation
 
-[] Koppla C#-klasser till databasen med hjälp av Dapper
-[] Bygg funktionalitet för:
+- [] Koppla C#-klasser till databasen med hjälp av Dapper
+- [] Bygg funktionalitet för:
   - Elev
   - Lärare
   - Vårdnadshavare
@@ -34,5 +34,5 @@ C#-implementation
 
 Rapport
 
-[] Skriv en trevlig rapport på max 600 ord
+- [] Skriv en trevlig rapport på max 600 ord
 
