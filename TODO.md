@@ -20,7 +20,7 @@ SQL-implementation
 C#-implementation
 
 - [] Koppla C#-klasser till databasen med hjälp av Dapper
-- [] Bygg funktionalitet för:
+- [] Implementera CRUD-operationer (Create, Read, Update, Delete) för varje klass:
   - Elev
   - Lärare
   - Vårdnadshavare
