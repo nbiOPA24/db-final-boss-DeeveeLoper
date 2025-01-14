@@ -59,7 +59,7 @@ class Subject // Ämne
 class Room // Undervisningssal
 {
     public int RoomId { get; set; }
-    public int RoomName { get; set; }
+    public int RoomNumber { get; set; }
     public int Capacity { get; set; }
     public string Equipment { get; set; }
     public bool IsActive { get; set; }
@@ -92,7 +92,7 @@ class Lesson // Lektion
     public string LessonName { get; set; }
     public string LessonCode { get; set; }
     public DateTime StartDate { get; set; }
-    public DateTime EndTime { get; set; }
+    public DateTime EndDate { get; set; }
     public int MaxStudents { get; set; }
     public int IsActive { get; set; }
 }
@@ -105,7 +105,7 @@ class StudentLesson
     public bool IsActive { get; set; }
 }
 
-class SubjectGrade // betyg
+class SubjectGrade // Betyg
 {
     public int SubjectGradeId { get; set; }
     public int StudentId { get; set; }
@@ -115,6 +115,9 @@ class SubjectGrade // betyg
     public string Term { get; set; }
     public bool IsFinal { get; set; }
     public string Comment { get; set; }
+
+    public Student Student { get; set; }
+    public Subject Subject { get; set; }
 }
 
 class Attendance // Närvaro
@@ -122,7 +125,7 @@ class Attendance // Närvaro
     public int AttendanceId { get; set; }
     public int StudentId { get; set; }
     public int LessonId { get; set; } 
-    public DateTime StartTime { get; set; }
+    public DateTime DateTime { get; set; }
     public bool IsPresent { get; set; }
     public string? Comment { get; set; }
 }
