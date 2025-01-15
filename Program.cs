@@ -188,7 +188,6 @@ class Program
                     foreach (var t in teacherLoads)
                     {
                         Console.WriteLine($"Lärare: {t.TeacherName}");
-                        Console.WriteLine($"Email: {t.TeacherEmail}");
                         Console.WriteLine($"Antal elever: {t.NumberOfStudents}");
                         Console.WriteLine($"Klasser: {(string.IsNullOrEmpty(t.Classes) ? "Inga klasser" : t.Classes)}");
                         Console.WriteLine("-----------------------------------------------");
