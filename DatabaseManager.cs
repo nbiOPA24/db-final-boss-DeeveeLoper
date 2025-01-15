@@ -6,7 +6,7 @@ namespace SchoolPlatform;
 
 internal class DatabaseManager
 {
-    // Skapar en databasanslutning
+    //  Hanterar alla databasoperationer för skolplattformen
     private IDbConnection Connect()
     {
         string connectionstring = File.ReadAllText("connectionstring.txt");
@@ -14,7 +14,7 @@ internal class DatabaseManager
         return connection;
     }
 
-    // Visar alla elever
+    // Hämtar alla elever från databasen
     public IEnumerable<Student> GetAllStudents()
     {
         using IDbConnection connection = Connect();
@@ -22,7 +22,7 @@ internal class DatabaseManager
         return students;
     }
 
-    // Visar alla elevers betyg
+    // Hämtar alla elevers betyg
     public IEnumerable<SubjectGrade> GetAllStudentGrades()
     {
         using IDbConnection connection = Connect();
@@ -45,33 +45,38 @@ internal class DatabaseManager
         );
     }
 
-    // Visar alla elever med specialkost
+    // Hämtar alla elever med specialkost
     public IEnumerable<Student> GetStudentsWithSpecialDiet()
     {
         using IDbConnection connection = Connect();
         string sql = @"SELECT s.*
-       FROM Student s
-       WHERE s.SpecialDiet = 1
-       ORDER BY s.Class, s.LastName";
+        FROM Student s
+        WHERE s.SpecialDiet = 1
+        ORDER BY s.Class, s.LastName";
 
         return connection.Query<Student>(sql);
     }
 
-    // Mentor
-    public IEnumerable<dynamic> GetStudentsWithClassMentors()
+    // Hämtar alla elever tillsammans med deras mentorer
+    public IEnumerable<dynamic> GetStudentsWithMentors()
     {
         using IDbConnection connection = Connect();
-        string sql = @"SELECT s.FirstName + ' ' + s.LastName as StudentName, s.Class, t.FirstName + ' ' + t.LastName as MentorName
-       FROM Student s
-       LEFT JOIN StudentTeacher st ON s.StudentId = st.StudentId
-       LEFT JOIN Teacher t ON st.TeacherId = t.TeacherId
-       WHERE t.IsMentor = 1
-       ORDER BY s.Class, s.LastName";
+        string sql = @"
+            WITH MentorInfo AS (SELECT DISTINCT s.Class, FIRST_VALUE(t.FirstName + ' ' + t.LastName) OVER (PARTITION BY s.Class ORDER BY t.TeacherId) as MentorName
+            FROM Student s
+            JOIN StudentTeacher st ON s.StudentId = st.StudentId
+            JOIN Teacher t ON st.TeacherId = t.TeacherId
+            WHERE t.IsMentor = 1
+        )
+        SELECT s.FirstName + ' ' + s.LastName as StudentName, s.Class, m.MentorName
+        FROM Student s
+        LEFT JOIN MentorInfo m ON s.Class = m.Class
+        ORDER BY s.Class, s.LastName";
 
         return connection.Query(sql);
     }
 
-    // Uppdaterar elev
+    // Uppdaterar en elevs information
     public void UpdateStudent(Student student)
     {
         using IDbConnection connection = Connect();
@@ -92,7 +97,7 @@ internal class DatabaseManager
         connection.Execute(sql, student);
     }
 
-    // Visar alla lärare
+    // Hämtar alla lärare
     public IEnumerable<Teacher> GetAllTeachers()
     {
         using IDbConnection connection = Connect();
@@ -100,29 +105,26 @@ internal class DatabaseManager
         return teachers;
     }
 
-    // Visar antal elever per lärare
+    // Beräknar antal elever per lärare
     public IEnumerable<dynamic> GetStudentCountPerTeacher()
     {
         using IDbConnection connection = Connect();
-        string sql = @"
-       SELECT 
-           t.FirstName + ' ' + t.LastName as TeacherName, COUNT(DISTINCT st.StudentId) as NumberOfStudents, STUFF((SELECT DISTINCT ', ' + s2.Class 
+        string sql = @"SELECT t.FirstName + ' ' + t.LastName as TeacherName, COUNT(DISTINCT st.StudentId) as NumberOfStudents, STUFF((SELECT DISTINCT ', ' + s2.Class 
                FROM StudentTeacher st2
                JOIN Student s2 ON st2.StudentId = s2.StudentId
                WHERE st2.TeacherId = t.TeacherId
-               FOR XML PATH('')
-           ), 1, 2, '') as Classes
-       FROM Teacher t
-       LEFT JOIN StudentTeacher st ON t.TeacherId = st.TeacherId
-       LEFT JOIN Student s ON st.StudentId = s.StudentId
-       WHERE t.IsActive = 1
-       GROUP BY t.TeacherId, t.FirstName, t.LastName
-       ORDER BY NumberOfStudents DESC";
+               FOR XML PATH('')), 1, 2, '') as Classes
+        FROM Teacher t
+        LEFT JOIN StudentTeacher st ON t.TeacherId = st.TeacherId
+        LEFT JOIN Student s ON st.StudentId = s.StudentId
+        WHERE t.IsActive = 1
+        GROUP BY t.TeacherId, t.FirstName, t.LastName
+        ORDER BY NumberOfStudents DESC";
 
         return connection.Query(sql);
     }
 
-    // Updaterar lärare
+    // Uppdaterar en lärares information
     public void UpdateTeacher(Teacher teacher)
     {
         using IDbConnection connection = Connect();
@@ -146,7 +148,7 @@ internal class DatabaseManager
         connection.Execute(sql, teacher);
     }
 
-    // Visar alla salar
+    // Hämtar alla salar
     public IEnumerable<Room> GetAllRooms()
     {
         using IDbConnection connection = Connect();
@@ -154,30 +156,30 @@ internal class DatabaseManager
         return rooms;
     }
 
-    // Visar tillgänliga salar
+    // Hämtar alla tillgängliga (ej aktiva) salar
     public IEnumerable<Room> GetAvailableRooms()
     {
         using IDbConnection connection = Connect();
         string sql = @"
-       SELECT r.*
-       FROM Room r
-       WHERE r.IsActive = 0
-       ORDER BY r.RoomNumber";
+        SELECT r.*
+        FROM Room r
+        WHERE r.IsActive = 0
+        ORDER BY r.RoomNumber";
 
         return connection.Query<Room>(sql);
     }
 
-    // Uppdater en skolsal
+    // Uppdaterar information om en sal
     public void UpdateRoom(Room room)
     {
         using IDbConnection connection = Connect();
         string sql = @"
-       UPDATE Room 
-       SET RoomNumber = @RoomNumber,
+        UPDATE Room 
+        SET RoomNumber = @RoomNumber,
            Capacity = @Capacity,
            Equipment = @Equipment,
            IsActive = @IsActive
-       WHERE RoomId = @RoomId";
+        WHERE RoomId = @RoomId";
 
         connection.Execute(sql, room);
     }
@@ -187,22 +189,22 @@ internal class DatabaseManager
     {
         using IDbConnection connection = Connect();
         string sql = @"
-       INSERT INTO Room (RoomNumber, Capacity, Equipment, IsActive)
-       VALUES (@RoomNumber, @Capacity, @Equipment, @IsActive);
-       SELECT CAST(SCOPE_IDENTITY() as int)";
+        INSERT INTO Room (RoomNumber, Capacity, Equipment, IsActive)
+        VALUES (@RoomNumber, @Capacity, @Equipment, @IsActive);
+        SELECT CAST(SCOPE_IDENTITY() as int)";
 
         return connection.QuerySingle<int>(sql, room);
     }
 
-    // Ta bort sal
+    // Tar bort en sal
     public void DeleteRoom(int roomId)
     {
         using IDbConnection connection = Connect();
         // Först kontrollera om salen används i några lektioner
         string checkSql = @"
-       SELECT COUNT(*) 
-       FROM Lesson 
-       WHERE RoomId = @RoomId";
+        SELECT COUNT(*) 
+        FROM Lesson 
+        WHERE RoomId = @RoomId";
 
         int lessonCount = connection.QuerySingle<int>(checkSql, new { RoomId = roomId });
 
@@ -215,7 +217,7 @@ internal class DatabaseManager
         connection.Execute(sql, new { RoomId = roomId });
     }
 
-    // Visar alla ämnen
+    // Hämtar alla ämnen
     public IEnumerable<Subject> GetAllSubjects()
     {
         using IDbConnection connection = Connect();
@@ -223,7 +225,7 @@ internal class DatabaseManager
         return subjects;
     }
 
-    // Visar alla lektioner
+    // Hämtar alla lektioner
     public IEnumerable<Lesson> GetAllLessons()
     {
         using IDbConnection connection = Connect();
@@ -231,7 +233,7 @@ internal class DatabaseManager
         return lessons;
     }
 
-    // Visar all närvaro på alla elever
+    // Hämtar all närvaroinformation för elever
     public IEnumerable<Attendance> GetAllAttendance()
     {
         using IDbConnection connection = Connect();
@@ -239,7 +241,7 @@ internal class DatabaseManager
         return attendance;
     }
 
-    // Visar alla vårdnadshavare
+    // Hämtar alla vårdnadshavare
     public IEnumerable<Guardian> GetAllGuardians()
     {
         using IDbConnection connection = Connect();
@@ -247,7 +249,7 @@ internal class DatabaseManager
         return teachers;
     }
 
-    // Visar alla elever och deras vårdnadshavare
+    // Hämtar alla elever och deras vårdnadshavare
     public IEnumerable<(Student student, Guardian guardian)> GetStudentsAndGuardians()
     {
         using IDbConnection connection = Connect();
@@ -264,14 +266,12 @@ internal class DatabaseManager
         );
     }
 
-
-
+    // Hämtar en specifik sal baserat på dess ID.
     public Room GetRoomById(int roomId)
     {
         using IDbConnection connection = Connect();
         string sql = "SELECT * FROM Room WHERE RoomId = @RoomId";
         return connection.QuerySingleOrDefault<Room>(sql, new { RoomId = roomId });
     }
-
 }
 
