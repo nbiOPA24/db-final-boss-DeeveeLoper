@@ -26,7 +26,7 @@ class Teacher // Lärare
     public string? StreetAddress { get; set; }
     public string? PostalCode { get; set; }
     public string? City { get; set; }
-    public DateTime HireDate { get; set; }
+    public DateTime? HireDate { get; set; }
     public string SubjectQualified { get; set; }
     public string EmploymentType { get; set; }
     public string? OtherSchool { get; set; }
@@ -61,7 +61,7 @@ class Room // Undervisningssal
     public int RoomId { get; set; }
     public int RoomNumber { get; set; }
     public int Capacity { get; set; }
-    public string Equipment { get; set; }
+    public string? Equipment { get; set; }
     public bool IsActive { get; set; }
 }
 
