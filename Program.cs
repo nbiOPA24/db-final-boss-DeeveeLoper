@@ -16,7 +16,7 @@ class Program
             Console.WriteLine("============================================================");
             Console.WriteLine("➤ ELEVER");
             Console.WriteLine("1. Visa alla elever");
-            Console.WriteLine("2. Visa alla elevers betyg för 2024");
+            Console.WriteLine("2. Visa alla elevers betyg i åk 9A för 2024");
             Console.WriteLine("3. Visa alla elever med specialkost");
             Console.WriteLine("4. Visa elever och deras mentor");
             Console.WriteLine("5. Uppdatera elev");
@@ -78,10 +78,12 @@ class Program
                     foreach (var g in grades)
                     {
                         Console.WriteLine($"Elev: {g.Student.FirstName} {g.Student.LastName}");
+                        Console.WriteLine($"Klass: {g.Student.Class}");
                         Console.WriteLine($"Ämne: {g.Subject.SubjectName}");
                         Console.WriteLine($"Betyg: {g.GradeValue}");
                         Console.WriteLine($"Termin: {g.Term}");
                         Console.WriteLine($"Slutbetyg: {(g.IsFinal ? "Ja" : "Nej")}");
+                        Console.WriteLine($"Kommentar: {g.Comment}");
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
@@ -103,7 +105,7 @@ class Program
 
                     PrintHeader("Elever och deras klassmentorer");
 
-                    var classMentorships = db.GetStudentsWithClassMentors();
+                    var classMentorships = db.GetStudentsWithMentors();
                     string currentClass = "";
 
                     foreach (var c in classMentorships)
