@@ -2,7 +2,7 @@
 
 namespace SchoolPlatform;
 
-class Program 
+class Program
 {
     static void Main()
     {
@@ -15,45 +15,44 @@ class Program
             Console.WriteLine("Välj ett alternativ genom att ange motsvarande siffra (1-18)");
             Console.WriteLine("============================================================");
             Console.WriteLine("➤ ELEVER");
-            Console.WriteLine("1. Visa alla elever");
+            Console.WriteLine("1. Visa alla elever och deras information");
             Console.WriteLine("2. Visa alla elevers betyg i åk 9A för 2024");
             Console.WriteLine("3. Visa alla elever med specialkost");
             Console.WriteLine("4. Visa elever och deras mentor");
             Console.WriteLine("5. Uppdatera elev");
-            Console.WriteLine("===============================================");
+            Console.WriteLine("============================================================");
             Console.WriteLine("➤ PERSONAL");
-            Console.WriteLine("6. Visa alla lärare");
+            Console.WriteLine("6. Visa alla lärare och deras information");
             Console.WriteLine("7. Visa antal elever per lärare");
             Console.WriteLine("8. Uppdatera lärare");
-            Console.WriteLine("===============================================");
+            Console.WriteLine("============================================================");
             Console.WriteLine("➤ SALAR");
-            Console.WriteLine("9. Visa alla salar");
+            Console.WriteLine("9. Visa alla salar och deras information");
             Console.WriteLine("10. Visa lediga salar");
             Console.WriteLine("11. Uppdatera sal");
             Console.WriteLine("12. Lägg till en ny sal");
             Console.WriteLine("13. Ta bort sal");
-            Console.WriteLine("===============================================");
+            Console.WriteLine("============================================================");
             Console.WriteLine("➤ UNDERVISNING");
             Console.WriteLine("14. Visa alla skolämnen");
             Console.WriteLine("15. Visa alla lektioner");
             Console.WriteLine("16. Visa närvarorapport för alla elever i åk 8A, 8B, 9A och 9B (2025-01-07)");
-            Console.WriteLine("===============================================");
+            Console.WriteLine("============================================================");
             Console.WriteLine("➤ VÅRDNADSHAVARE");
             Console.WriteLine("17. Visa alla vårdnadshavare och deras information");
             Console.WriteLine("18. Visa alla elever med deras vårdnadshavare");
-            Console.WriteLine("===============================================");
+            Console.WriteLine("============================================================");
             Console.WriteLine("a. Avsluta");
-            Console.WriteLine("===============================================");
+            Console.WriteLine("============================================================");
 
             string choice = Console.ReadLine();
 
             switch (choice)
             {
                 case "1":
-                    IEnumerable<Student> students = db.GetAllStudents();
-
                     PrintHeader("Elever");
 
+                    IEnumerable<Student> students = db.GetAllStudents();
                     foreach (Student s in students)
                     {
                         Console.WriteLine($"Id: {s.StudentId}");
@@ -69,12 +68,10 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "2":
-                    IEnumerable<SubjectGrade> grades = db.GetAllStudentGrades();
-
                     PrintHeader("Elevers betyg");
 
+                    IEnumerable<SubjectGrade> grades = db.GetAllStudentGrades();
                     foreach (var g in grades)
                     {
                         Console.WriteLine($"Elev: {g.Student.FirstName} {g.Student.LastName}");
@@ -87,22 +84,18 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "3":
-                    var specialDietStudents = db.GetStudentsWithSpecialDiet();
-
                     PrintHeader("Elever med specialkost");
 
-                    foreach (var student in specialDietStudents)
+                    var specialDietStudents = db.GetStudentsWithSpecialDiet();
+                    foreach (var s in specialDietStudents)
                     {
-                        Console.WriteLine($"Namn: {student.FirstName} {student.LastName}");
-                        Console.WriteLine($"Klass: {student.Class}");
+                        Console.WriteLine($"Namn: {s.FirstName} {s.LastName}");
+                        Console.WriteLine($"Klass: {s.Class}");
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "4":
-
                     PrintHeader("Elever och deras klassmentorer");
 
                     var classMentorships = db.GetStudentsWithMentors();
@@ -111,8 +104,9 @@ class Program
                     foreach (var c in classMentorships)
                     {
                         if (currentClass != c.Class)
-                        {                                            
+                        {
                             currentClass = c.Class;
+                            Console.WriteLine($"Elev: {c.StudentName}");
                             Console.WriteLine($"\nKlass {c.Class}");
                             Console.WriteLine($"Mentor: {c.MentorName}");
                             Console.WriteLine("-----------------------------------------------");
@@ -122,7 +116,6 @@ class Program
                     break;
 
                 case "5":
-
                     PrintHeader("Uppdatera elev");
 
                     Console.WriteLine("\nAnge ID på eleven som ska uppdateras:");
@@ -157,7 +150,6 @@ class Program
                     break;
 
                 case "6":
-
                     PrintHeader("Lärare");
 
                     IEnumerable<Teacher> teachers = db.GetAllTeachers();
@@ -179,8 +171,6 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
-
                 case "7":
 
                     PrintHeader("Antal elever per lärare");
@@ -195,15 +185,11 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "8":
-
                     PrintHeader("Uppdatera lärare");
 
                     Console.WriteLine("\nAnge ID på lärare som ska uppdateras:");
-
                     int updateTeacherId = int.Parse(Console.ReadLine());
-
                     // Hämta befintlig lärare
                     var allTeachers = db.GetAllTeachers();
 
@@ -232,12 +218,10 @@ class Program
                         Console.WriteLine("Hittade ingen lärare med det ID:t");
                     }
                     break;
-
                 case "9":
-                    IEnumerable<Room> rooms = db.GetAllRooms();
-
                     PrintHeader("Salar");
 
+                    IEnumerable<Room> rooms = db.GetAllRooms();
                     foreach (Room r in rooms)
                     {
                         Console.WriteLine($"Id: {r.RoomId}");
@@ -248,25 +232,23 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
-
                 case "10":
-                    IEnumerable<Room> availableRooms = db.GetAvailableRooms();
-
                     PrintHeader("Lediga salar");
 
-                    foreach (Room room in availableRooms)
+                    IEnumerable<Room> availableRooms = db.GetAvailableRooms();
+                    foreach (Room r in availableRooms)
                     {
-                        Console.WriteLine($"Id: {room.RoomId}");
-                        Console.WriteLine($"Sal: {room.RoomNumber}");
-                        Console.WriteLine($"Kapacitet: {room.Capacity}");
-                        Console.WriteLine($"Utrustning: {room.Equipment}");
+                        Console.WriteLine($"Id: {r.RoomId}");
+                        Console.WriteLine($"Sal: {r.RoomNumber}");
+                        Console.WriteLine($"Kapacitet: {r.Capacity}");
+                        Console.WriteLine($"Utrustning: {r.Equipment}");
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
 
                 case "11":
                     PrintHeader("Uppdatera sal");
+
                     Console.WriteLine("\nAnge ID på salen som ska uppdateras:");
                     int updateRoomId = int.Parse(Console.ReadLine());
 
@@ -288,14 +270,10 @@ class Program
                         Console.WriteLine("Hittade ingen sal med det ID:t");
                     }
                     break;
-
-
                 case "12":
-
                     PrintHeader("Lägg till en ny sal");
 
                     var newRoom = new Room();
-
                     try
                     {
                         Console.Write("Salsnummer: ");
@@ -306,8 +284,7 @@ class Program
                         newRoom.Equipment = Console.ReadLine();
                         newRoom.IsActive = true;  // Ny sal är aktiv by default
 
-                        Console.WriteLine("\nÄr du säker på att du vill lägga till salen? (ja/nej)");
-                        if (Console.ReadLine().ToLower() == "ja")
+                        if (ConfirmAction("lägga till salen"))
                         {
                             int newRoomId = db.AddRoom(newRoom);
                             Console.WriteLine($"Salen har lagts till med ID: {newRoomId}");
@@ -324,7 +301,6 @@ class Program
                     break;
 
                 case "13":
-
                     PrintHeader("Ta bort sal");
 
                     Console.WriteLine("Ange ID på salen som ska tas bort (eller 0 för att avbryta):");
@@ -352,10 +328,9 @@ class Program
                     break;
 
                 case "14":
-                    IEnumerable<Subject> subjects = db.GetAllSubjects();
-
                     PrintHeader("Skolämnen");
 
+                    IEnumerable<Subject> subjects = db.GetAllSubjects();
                     foreach (Subject sub in subjects)
                     {
                         Console.WriteLine($"Id: {sub.SubjectId}");
@@ -365,12 +340,10 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "15":
-                    IEnumerable<Lesson> lessons = db.GetAllLessons();
-
                     PrintHeader("Lektioner");
 
+                    IEnumerable<Lesson> lessons = db.GetAllLessons();
                     foreach (Lesson l in lessons)
                     {
                         Console.WriteLine($"Id: {l.LessonId}");
@@ -386,13 +359,10 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "16":
-   
-                    IEnumerable<Attendance> attendance = db.GetAllAttendance();
-
                     PrintHeader("Elevers närvaro");
 
+                    IEnumerable<Attendance> attendance = db.GetAllAttendance();
                     foreach (Attendance a in attendance)
                     {
                         Console.WriteLine($"Id: {a.AttendanceId}");
@@ -404,10 +374,10 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "17":
-                    IEnumerable<Guardian> guardians = db.GetAllGuardians();
                     PrintHeader("Vårdnadshavare");
+
+                    IEnumerable<Guardian> guardians = db.GetAllGuardians();
                     foreach (Guardian g in guardians)
                     {
                         Console.WriteLine($"Id: {g.GuardianId}");
@@ -423,12 +393,10 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "18":
-                    var studentsWithGuardians = db.GetStudentsAndGuardians();
-
                     PrintHeader("Elever och deras vårdnadshavare");
 
+                    var studentsWithGuardians = db.GetStudentsAndGuardians();
                     foreach (var (student, guardian) in studentsWithGuardians)
                     {
                         Console.WriteLine($"Elev: {student.FirstName} {student.LastName}");
@@ -448,7 +416,7 @@ class Program
 
         }
     }
-    
+
     private static string GetUpdatedValue(string prompt, string currentValue)
     {
         Console.Write($"{prompt} (nuvarande värde: {currentValue}): ");
@@ -458,7 +426,7 @@ class Program
 
     private static bool ConfirmAction(string action)
     {
-        Console.WriteLine($"\nÄr du säker på att du vill {action}? (ja/nej)");
+        Console.WriteLine($"\nÄr du säker på att du vill {action}? (skriv ja/nej)");
         return Console.ReadLine().ToLower() == "ja";
     }
     // Metod för header
