@@ -9,9 +9,9 @@ Associationsdiagram
 
 SQL-implementation
 
-- [] Skapa den normaliserade relationsdatabasen i SQL
-- [] Lägg till exempeldata i varje tabell
-- [] Skriv och testa minst tio meningsfulla SQL-koder:
+- [x] Skapa den normaliserade relationsdatabasen i SQL
+- [x] Lägg till exempeldata i varje tabell
+- [x] Skriv och testa minst tio meningsfulla SQL-koder:
   - Minst 3 JOINs
   - Minst 1 SQL-funktion
 
@@ -19,14 +19,15 @@ SQL-implementation
 
 C#-implementation
 
-- [] Koppla C#-klasser till databasen med hjälp av Dapper
-- [] Implementera CRUD-operationer (Create, Read, Update, Delete) för varje klass:
+- [x] Koppla C#-klasser till databasen med hjälp av Dapper
+- [x] Implementera CRUD-operationer (Create, Read, Update, Delete):
   - Elev
   - Lärare
   - Vårdnadshavare
   - Lektion
-  - Klassrum
+  - Sal
   - Betyg
+  - Närvaro
 
 🔔 Obs. Glöm inte att pusha och commita regelbundet till GitHub-repo
 
