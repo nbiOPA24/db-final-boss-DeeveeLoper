@@ -23,33 +23,31 @@ internal class DatabaseManager
     }
 
     // Hämtar alla elevers betyg
-    public IEnumerable<SubjectGrade> GetAllStudentGrades()
-    {
+public IEnumerable<SubjectGrade> GetAllStudentGrades()
+{
+    const string sql = @"
+        SELECT sg.*, s.*, subj.*
+        FROM SubjectGrade sg
+        JOIN Student s ON sg.StudentId = s.StudentId
+        JOIN Subject subj ON sg.SubjectId = subj.SubjectId
+        ORDER BY s.LastName, s.FirstName, s.Class, subj.SubjectName, sg.Comment";
+
         using IDbConnection connection = Connect();
-
-        string sql = @"SELECT sg.*, s.*, subj.*
-            FROM SubjectGrade sg
-            INNER JOIN Student s ON sg.StudentId = s.StudentId
-            INNER JOIN Subject subj ON sg.SubjectId = subj.SubjectId
-            ORDER BY s.LastName, s.FirstName, subj.SubjectName";
-
         return connection.Query<SubjectGrade, Student, Subject, SubjectGrade>(
-            sql,
-            (grade, student, subject) =>
-            {
-                grade.Student = student;
-                grade.Subject = subject;
-                return grade;
-            },
-            splitOn: "StudentId,SubjectId"
-        );
-    }
-
+        sql,
+        (grade, student, subject) => {
+            grade.Student = student;
+            grade.Subject = subject;
+            return grade;
+        },
+        splitOn: "StudentId,SubjectId");
+}
     // Hämtar alla elever med specialkost
     public IEnumerable<Student> GetStudentsWithSpecialDiet()
     {
         using IDbConnection connection = Connect();
-        string sql = @"SELECT s.*
+        string sql = @"
+        SELECT s.*
         FROM Student s
         WHERE s.SpecialDiet = 1
         ORDER BY s.Class, s.LastName";
@@ -62,12 +60,12 @@ internal class DatabaseManager
     {
         using IDbConnection connection = Connect();
         string sql = @"
-            WITH MentorInfo AS (SELECT DISTINCT s.Class, FIRST_VALUE(t.FirstName + ' ' + t.LastName) OVER (PARTITION BY s.Class ORDER BY t.TeacherId) as MentorName
+         WITH MentorInfo AS (SELECT DISTINCT s.Class, FIRST_VALUE
+            (t.FirstName + ' ' + t.LastName) OVER (PARTITION BY s.Class ORDER BY t.TeacherId) as MentorName
             FROM Student s
             JOIN StudentTeacher st ON s.StudentId = st.StudentId
             JOIN Teacher t ON st.TeacherId = t.TeacherId
-            WHERE t.IsMentor = 1
-        )
+            WHERE t.IsMentor = 1)
         SELECT s.FirstName + ' ' + s.LastName as StudentName, s.Class, m.MentorName
         FROM Student s
         LEFT JOIN MentorInfo m ON s.Class = m.Class
@@ -109,7 +107,8 @@ internal class DatabaseManager
     public IEnumerable<dynamic> GetStudentCountPerTeacher()
     {
         using IDbConnection connection = Connect();
-        string sql = @"SELECT t.FirstName + ' ' + t.LastName as TeacherName, COUNT(DISTINCT st.StudentId) as NumberOfStudents, STUFF((SELECT DISTINCT ', ' + s2.Class 
+        string sql = @"
+               SELECT t.FirstName + ' ' + t.LastName as TeacherName, COUNT(DISTINCT st.StudentId) as NumberOfStudents, STUFF((SELECT DISTINCT ', ' + s2.Class 
                FROM StudentTeacher st2
                JOIN Student s2 ON st2.StudentId = s2.StudentId
                WHERE st2.TeacherId = t.TeacherId
@@ -160,28 +159,13 @@ internal class DatabaseManager
     public IEnumerable<Room> GetAvailableRooms()
     {
         using IDbConnection connection = Connect();
-        string sql = @"
-        SELECT r.*
-        FROM Room r
-        WHERE r.IsActive = 0
-        ORDER BY r.RoomNumber";
-
-        return connection.Query<Room>(sql);
+        return connection.Query<Room>("SELECT * FROM Room WHERE IsActive = 0 ORDER BY RoomNumber");
     }
 
-    // Uppdaterar information om en sal
     public void UpdateRoom(Room room)
     {
         using IDbConnection connection = Connect();
-        string sql = @"
-        UPDATE Room 
-        SET RoomNumber = @RoomNumber,
-           Capacity = @Capacity,
-           Equipment = @Equipment,
-           IsActive = @IsActive
-        WHERE RoomId = @RoomId";
-
-        connection.Execute(sql, room);
+        connection.Execute("UPDATE Room SET RoomNumber = @RoomNumber, Capacity = @Capacity, Equipment = @Equipment, IsActive = @IsActive WHERE RoomId = @RoomId", room);
     }
 
     // Lägg till en ny sal
@@ -253,7 +237,8 @@ internal class DatabaseManager
     public IEnumerable<(Student student, Guardian guardian)> GetStudentsAndGuardians()
     {
         using IDbConnection connection = Connect();
-        string sql = @"SELECT s.*, g.*
+        string sql = @"
+            SELECT s.*, g.*
             FROM Student s
             INNER JOIN GuardianStudent gs ON s.StudentId = gs.StudentId
             INNER JOIN Guardian g ON gs.GuardianId = g.GuardianId
@@ -274,4 +259,3 @@ internal class DatabaseManager
         return connection.QuerySingleOrDefault<Room>(sql, new { RoomId = roomId });
     }
 }
-
