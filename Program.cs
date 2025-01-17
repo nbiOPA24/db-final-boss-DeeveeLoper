@@ -114,7 +114,6 @@ class Program
                         Console.WriteLine($"Elev: {c.StudentName}");
                     }
                     break;
-
                 case "5":
                     PrintHeader("Uppdatera elev");
 
@@ -141,14 +140,16 @@ class Program
                         existingStudent.EndDate?.ToString("yyyy-MM-dd") ?? ""), out DateTime endDate) ? endDate : (DateTime?)null;
 
                         db.UpdateStudent(existingStudent);
-                        Console.WriteLine("Eleven har uppdaterats!");
+
+                        Console.WriteLine("===========================");
+                        Console.WriteLine("= Eleven har uppdaterats! =");
+                        Console.WriteLine("===========================");
                     }
                     else
                     {
                         Console.WriteLine("Hittade ingen elev med det ID:t");
                     }
                     break;
-
                 case "6":
                     PrintHeader("Lärare");
 
@@ -172,7 +173,6 @@ class Program
                     }
                     break;
                 case "7":
-
                     PrintHeader("Antal elever per lärare");
 
                     var teacherLoads = db.GetStudentCountPerTeacher();
@@ -211,7 +211,9 @@ class Program
                         existingTeacher.IsActive = bool.Parse(GetUpdatedValue("Aktiv (true/false)", existingTeacher.IsActive.ToString()));
 
                         db.UpdateTeacher(existingTeacher);
-                        Console.WriteLine("Lärare har uppdaterats!");
+                        Console.WriteLine("===========================");
+                        Console.WriteLine("= Lärare har uppdaterats! =");
+                        Console.WriteLine("===========================");
                     }
                     else
                     {
@@ -245,7 +247,6 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "11":
                     PrintHeader("Uppdatera sal");
 
@@ -263,7 +264,9 @@ class Program
                         existingRoom.IsActive = bool.Parse(GetUpdatedValue("Aktiv (true/false)", existingRoom.IsActive.ToString()));
 
                         db.UpdateRoom(existingRoom);
-                        Console.WriteLine("Salen har uppdaterats!");
+                        Console.WriteLine("==========================");
+                        Console.WriteLine("= Salen har uppdaterats! =");
+                        Console.WriteLine("==========================");
                     }
                     else
                     {
@@ -299,7 +302,6 @@ class Program
                         Console.WriteLine("Felaktig inmatning. Salsnummer och kapacitet måste vara siffror.");
                     }
                     break;
-
                 case "13":
                     PrintHeader("Ta bort sal");
 
@@ -314,7 +316,9 @@ class Program
                         if (ConfirmAction("ta bort salen"))
                         {
                             db.DeleteRoom(deleteRoomId);
-                            Console.WriteLine("Salen har tagits bort!");
+                            Console.WriteLine("==========================");
+                            Console.WriteLine("= Salen har tagits bort! =");
+                            Console.WriteLine("==========================");
                         }
                         else
                         {
@@ -326,7 +330,6 @@ class Program
                         Console.WriteLine("Felaktig inmatning. ID måste vara siffror.");
                     }
                     break;
-
                 case "14":
                     PrintHeader("Skolämnen");
 
@@ -406,14 +409,12 @@ class Program
                         Console.WriteLine("-----------------------------------------------");
                     }
                     break;
-
                 case "a":
                     return;
                 default:
                     Console.WriteLine("Felaktigt val");
                     break;
             }
-
         }
     }
 
